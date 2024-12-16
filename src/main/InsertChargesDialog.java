@@ -39,6 +39,13 @@ public class InsertChargesDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
+	private JTextField txtBillID;
+    private JTextField txtElectricity;
+    private JTextField txtWater;
+    private JTextField txtFacilityName;
+    private JTextField txtFacilityBill;
+    private JTextField txtAdvancePayment;
+    
 	public InsertChargesDialog() {
 		setBounds(100, 100, 466, 496);
 		getContentPane().setLayout(new BorderLayout());
@@ -93,22 +100,22 @@ public class InsertChargesDialog extends JDialog {
     	lblFacilityName.setBounds(34, 188, 95, 19);
     	mainPanel.add(lblFacilityName);
     	
-    	JTextField txtElectricity = new JTextField();
+        txtElectricity = new JTextField();
     	txtElectricity.setBounds(183, 80, 215, 26);
     	mainPanel.add(txtElectricity);
     	txtElectricity.setColumns(10);
     	
-    	JTextField txtBillID = new JTextField();
+        txtBillID = new JTextField();
     	txtBillID.setColumns(10);
     	txtBillID.setBounds(183, 30, 215, 26);
     	mainPanel.add(txtBillID);
     	
-    	JTextField txtWater = new JTextField();
+        txtWater = new JTextField();
     	txtWater.setColumns(10);
     	txtWater.setBounds(183, 130, 215, 26);
     	mainPanel.add(txtWater);
     	
-    	JTextField txtFacilityName = new JTextField();
+        txtFacilityName = new JTextField();
     	txtFacilityName.setColumns(10);
     	txtFacilityName.setBounds(183, 186, 215, 26);
     	mainPanel.add(txtFacilityName);
@@ -118,7 +125,7 @@ public class InsertChargesDialog extends JDialog {
     	lblFacilityBill.setBounds(34, 240, 69, 19);
     	mainPanel.add(lblFacilityBill);
     	
-    	JTextField txtFacilityBill = new JTextField();
+        txtFacilityBill = new JTextField();
     	txtFacilityBill.setColumns(10);
     	txtFacilityBill.setBounds(183, 240, 215, 26);
     	mainPanel.add(txtFacilityBill);
@@ -128,7 +135,7 @@ public class InsertChargesDialog extends JDialog {
     	lblAdvancePayment.setBounds(34, 290, 121, 19);
     	mainPanel.add(lblAdvancePayment);
 
-    	JTextField txtAdvancePayment = new JTextField();
+        txtAdvancePayment = new JTextField();
     	txtAdvancePayment.setBounds(183, 290, 215, 26);
     	mainPanel.add(txtAdvancePayment);
 		
@@ -141,16 +148,28 @@ public class InsertChargesDialog extends JDialog {
 				JButton btnInsert = new JButton("INSERT");
 				btnInsert.addActionListener(e -> {
 				    DatabaseConnection db = new DatabaseConnection();
+				    
+				    
+				    // Validate advance payment field
+				    String advancePayment = txtAdvancePayment.getText();
+				    if (advancePayment == null || advancePayment.trim().isEmpty()) {
+				        advancePayment = "No Advance Payment";
+				    }
+
 				    boolean success = db.insertFacilityAndUpdateBill(
 				        txtBillID.getText(),
 				        txtElectricity.getText(),
 				        txtWater.getText(),
-				        txtAdvancePayment.getText(),
+				        advancePayment, // Use validated value
 				        txtFacilityName.getText(),
 				        txtFacilityBill.getText()
 				    );
 
-				    JOptionPane.showMessageDialog(this, success ? "Charges inserted successfully." : "Failed to insert charges.");
+				    JOptionPane.showMessageDialog(
+				        this, 
+				        success ? "Charges inserted successfully." : "Failed to insert charges."
+				    );
+
 				    if (success) dispose();
 				});
 
@@ -159,6 +178,7 @@ public class InsertChargesDialog extends JDialog {
 				btnInsert.setActionCommand("OK");
 				buttonPane.add(btnInsert);
 				getRootPane().setDefaultButton(btnInsert);
+
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
@@ -174,5 +194,13 @@ public class InsertChargesDialog extends JDialog {
 			}
 		}
 	}
+	
+	public void setChargesData(String billID, String electricity, String water, String facilityBill, String advancePayment) {
+        txtBillID.setText(billID);
+        txtElectricity.setText(electricity);
+        txtWater.setText(water);
+        txtFacilityBill.setText(facilityBill);
+        txtAdvancePayment.setText(advancePayment);
+    }
 
 }

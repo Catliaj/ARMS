@@ -364,6 +364,7 @@ public class Ledger extends JFrame {
                     record.getPaymentDate(),
                     record.getBillID(),
                     record.getPaymentID(),
+                    
                     record.getPaymentAmount(),
                     record.getBalanceAfterPayment()
             };

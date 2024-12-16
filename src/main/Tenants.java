@@ -302,10 +302,19 @@ public class Tenants extends JFrame {
     
     private void generateInvoice(int tenantID) {
         String sql = """
-            SELECT CONCAT(t.firstName, ' ', t.lastName) AS tenantName, 
-                   a.unitCode, a.rentAmount 
+            SELECT 
+                CONCAT(t.firstName, ' ', t.lastName) AS tenantName, 
+                a.unitCode AS facilityName, 
+                a.rentAmount, 
+                IFNULL(b.electricityBill, 0) AS electricityBill, 
+                IFNULL(b.waterBill, 0) AS waterBill, 
+                IFNULL(f.facilityBill, 0) AS facilityBill, 
+                IFNULL(b.advancePayment, 0) AS advancePayment,
+                IFNULL(b.totalAmount, 0) AS totalAmount
             FROM tenant t
             JOIN apartment a ON t.unitID = a.unitID
+            JOIN bills b ON t.tenantID = b.tenantID
+            LEFT JOIN facility f ON b.facilityID = f.facilityID
             WHERE t.tenantID = ?
         """;
 
@@ -314,17 +323,16 @@ public class Tenants extends JFrame {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String tenantName = rs.getString("tenantName");
-                    String unitCode = rs.getString("unitCode");
+                    String facilityName = rs.getString("facilityName"); // unitCode as facilityName
                     double rentAmount = rs.getDouble("rentAmount");
-
-                    // Replace these with actual database queries or computations.
-                    double electricityBill = 200.0;
-                    double waterBill = 150.0;
-                    double facilityBill = 100.0;
-                    double totalAmount = rentAmount + electricityBill + waterBill + facilityBill;
+                    double electricityBill = rs.getDouble("electricityBill");
+                    double waterBill = rs.getDouble("waterBill");
+                    double facilityBill = rs.getDouble("facilityBill");
+                    double advancePayment = rs.getDouble("advancePayment");
+                    double totalAmount = rs.getDouble("totalAmount");  // Total amount directly from the bills table
 
                     // Generate and display the receipt
-                    String receipt = generateReceipt(tenantName, unitCode, rentAmount, electricityBill, waterBill, facilityBill, totalAmount);
+                    String receipt = generateReceipt(tenantName, facilityName, rentAmount, electricityBill, waterBill, facilityBill, advancePayment, totalAmount);
 
                     JTextArea textArea = new JTextArea(receipt);
                     textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -343,7 +351,12 @@ public class Tenants extends JFrame {
         }
     }
 
-    private String generateReceipt(String tenantName, String unitCode, double rentAmount, double electricityBill, double waterBill, double facilityBill, double totalAmount) {
+
+
+
+
+
+    private String generateReceipt(String tenantName, String unitCode, double rentAmount, double electricityBill, double waterBill, double facilityBill, double advancePayment, double totalAmount) {
         StringBuilder receipt = new StringBuilder();
         receipt.append("----------- Invoice -------------\n");
         receipt.append("Tenant Name: ").append(tenantName).append("\n");
@@ -352,6 +365,7 @@ public class Tenants extends JFrame {
         receipt.append("Electricity Bill: ₱").append(String.format("%.2f", electricityBill)).append("\n");
         receipt.append("Water Bill: ₱").append(String.format("%.2f", waterBill)).append("\n");
         receipt.append("Facility Bill: ₱").append(String.format("%.2f", facilityBill)).append("\n");
+        receipt.append("Advance Payment: ₱").append(String.format("%.2f", advancePayment)).append("\n");
         receipt.append("Total Amount: ₱").append(String.format("%.2f", totalAmount)).append("\n");
         receipt.append("--------------------------------\n");
         receipt.append("Thank you for your payment!\n");

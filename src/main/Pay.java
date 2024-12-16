@@ -31,6 +31,7 @@ import dbConnection.DatabaseConnection;
 import componentsUI.BackgroundPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -193,17 +194,24 @@ public class Pay extends JFrame {
         mainPanel.add(btnRefresh);
         
         RoundedButton btnMakePayment = new RoundedButton("Make Payment", 15);
-        btnMakePayment.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	    MakePaymentDialog payment = new MakePaymentDialog();
-                
-                // Set modal to block other windows while this dialog is open
-                payment.setModal(true);
-                
-                // Display the dialog
-                payment.setVisible(true);
-        	}
+        btnMakePayment.addActionListener(e -> {
+            int selectedRow = tablePayBills.getSelectedRow();
+
+            if (selectedRow != -1) {
+                // Get the data from the selected row
+                String billID = tablePayBills.getValueAt(selectedRow, 2).toString(); // Assuming Bill ID is in column 2
+               
+
+                // Open the payment dialog and pass the data
+                MakePaymentDialog paymentDialog = new MakePaymentDialog();
+                paymentDialog.setPaymentData(billID);
+                paymentDialog.setModal(true);
+                paymentDialog.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a row to make a payment.");
+            }
         });
+
         btnMakePayment.setForeground(Color.WHITE);
         btnMakePayment.setBorderPainted(false);
         btnMakePayment.setFont(new Font("Segoe UI", Font.BOLD, 12));

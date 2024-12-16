@@ -7,14 +7,18 @@ public class Apartment {
     private String description;
     private double rentAmount;
     private String status;
+    private int bedspace;
 
-    public Apartment(int unitID, String unitCode, String unitType, String description, double rentAmount, String status) {
+    
+
+	public Apartment(int unitID, String unitCode, String unitType, String description, double rentAmount, String status,int bedspace) {
         this.unitID = unitID;
         this.unitCode = unitCode;
         this.unitType = unitType;
         this.description = description;
         this.rentAmount = rentAmount;
         this.status = status;
+        this.bedspace = bedspace;
     }
 
     public int getUnitID() {
@@ -40,4 +44,12 @@ public class Apartment {
     public String getStatus() {
         return status;
     }
+    public int getBedspace() {
+		return bedspace;
+	}
+
+	public void setBedspace(int bedspace) {
+		this.bedspace = bedspace;
+	}
+	public Apartment() {}
 }

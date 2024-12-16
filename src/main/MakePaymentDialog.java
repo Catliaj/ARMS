@@ -40,6 +40,8 @@ public class MakePaymentDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
+	JTextField txtBillID;
+	JTextField txtElectricity;
 	public MakePaymentDialog() {
 		setBounds(100, 100, 466, 381);
 		getContentPane().setLayout(new BorderLayout());
@@ -83,12 +85,12 @@ public class MakePaymentDialog extends JDialog {
     	lblEnterAmount.setBounds(34, 80, 121, 19);
     	mainPanel.add(lblEnterAmount);
     	
-    	JTextField txtBillID = new JTextField();
+    	 txtBillID = new JTextField();
     	txtBillID.setColumns(10);
     	txtBillID.setBounds(183, 30, 215, 26);
     	mainPanel.add(txtBillID);
     	
-    	JTextField txtElectricity = new JTextField();
+    	 txtElectricity = new JTextField();
     	txtElectricity.setBounds(183, 80, 215, 26);
     	mainPanel.add(txtElectricity);
     	txtElectricity.setColumns(10);
@@ -155,4 +157,10 @@ public class MakePaymentDialog extends JDialog {
 			}
 		}
 	}
+	
+	  // Method to populate fields with selected row data
+    public void setPaymentData(String billID) {
+        txtBillID.setText(billID);
+        
+    }
 }

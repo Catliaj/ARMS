@@ -5,6 +5,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import model.LedgerRecord;
 import dbConnection.DatabaseConnection;
@@ -58,7 +61,7 @@ public class ViewLedgerFrame extends JFrame {
         // Create a table model and populate the ledger table
         DefaultTableModel ledgerModel = new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Payment Date", "Advance Payment", "Balance", "Month of Payment"}
+                new String[]{"Payment Date", "Advance Payment", "Payment Amount", "Balance", "Month of Payment"}
         );
         ledgerTable.setModel(ledgerModel);
         
@@ -82,17 +85,44 @@ public class ViewLedgerFrame extends JFrame {
 
         // Fetch ledger data for the tenant
         List<LedgerRecord> ledgerData = DatabaseConnection.getInstance().getLedgerData(tenantID);
-        for (LedgerRecord record : ledgerData) {
-            Object[] row = {
-                    record.getPaymentDate(),
-                    record.getPaymentAmount(),
-                    record.getBalanceAfterPayment(),
-                    getMonthOfPayment(record.getPaymentDate())  // Calculate and add the month
-            };
-            ledgerModel.addRow(row);
-        }
-        panel.setLayout(null);
-        panel.add(scrollPane);
+
+     // Fetch the advance payment for the tenant from the bills table
+     String advancePaymentQuery = """
+         SELECT IFNULL(SUM(b.advancePayment), 0) AS totalAdvancePayment
+         FROM bills b
+         WHERE b.tenantID = ?
+     """;
+
+     double totalAdvancePayment = 0.0;
+
+     try (PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(advancePaymentQuery)) {
+         stmt.setInt(1, tenantID); // Bind the tenantID parameter
+         ResultSet rs = stmt.executeQuery();
+
+         if (rs.next()) {
+             totalAdvancePayment = rs.getDouble("totalAdvancePayment");
+         }
+     } catch (SQLException e) {
+         e.printStackTrace();
+     }
+
+     // Add ledger rows including advance payment
+     for (LedgerRecord record : ledgerData) {
+         Object[] row = {
+             record.getPaymentDate(),
+             String.format("₱%.2f", totalAdvancePayment),
+             record.getPaymentAmount(),
+             record.getBalanceAfterPayment(),
+             getMonthOfPayment(record.getPaymentDate()) // Calculate and add the month
+              // Add total advance payment to the row
+         };
+         ledgerModel.addRow(row);
+     }
+
+     // Update panel layout
+     panel.setLayout(null);
+     panel.add(scrollPane);
+
 
         // Add scrollPane to center of the frame
         JLabel label = new JLabel("Tenant ID: " + tenantID);

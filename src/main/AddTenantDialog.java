@@ -29,6 +29,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.util.Date;
+import model.Apartment;
 
 public class AddTenantDialog extends JDialog {
 
@@ -38,9 +39,9 @@ public class AddTenantDialog extends JDialog {
 	private JTextField txtFname;
 	private JTextField txtContactNo;
 	private JTextField txtEmail;
-	private JTextField txtOccupants;
 	private JTextField textField_6;
 	private JTextField textField_7;
+	private JTextField occupants;
 
 	/**
 	 * Launch the application.
@@ -54,6 +55,7 @@ public class AddTenantDialog extends JDialog {
 			e.printStackTrace();
 		}
 	}
+	Apartment apartment = new Apartment();
 
 	/**
 	 * Create the dialog.
@@ -133,7 +135,7 @@ public class AddTenantDialog extends JDialog {
         	mainPanel.add(lblUnitCode);
         	
         	JComboBox comboBoxUnitCode = new JComboBox();
-        	comboBoxUnitCode.setModel(new DefaultComboBoxModel(new String[] {"", "SOL-101", "SOL-102", "SOL-103", "SOL-104", "SOL-105", "SOL-106", "SOL-107", "SOL-108", "COP-101", "COP-102", "COP-103", "COP-104", "COP-105", "COP-106", "COP-107", "COP-108", "FAM-101", "FAM-102", "FAM-103", "FAM-104", "FAM-105", "FAM-106", "FAM-107", "FAM-108"}));
+        	comboBoxUnitCode.addItem(apartment.getUnitCode());
         	comboBoxUnitCode.setBounds(183, 238, 215, 26);
         	mainPanel.add(comboBoxUnitCode);
         	
@@ -154,11 +156,6 @@ public class AddTenantDialog extends JDialog {
         	lblOccupants.setBounds(34, 288, 119, 19);
         	mainPanel.add(lblOccupants);
         	
-        	txtOccupants = new JTextField();
-        	txtOccupants.setColumns(10);
-        	txtOccupants.setBounds(183, 288, 215, 26);
-        	mainPanel.add(txtOccupants);
-        	
         	JLabel lblDateRented = new JLabel("Date Rented:");
         	lblDateRented.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         	lblDateRented.setBounds(34, 457, 109, 19);
@@ -177,6 +174,11 @@ public class AddTenantDialog extends JDialog {
             JDateChooser rentEndChooser = new JDateChooser();
             rentEndChooser.setBounds(183, 509, 215, 26);
             mainPanel.add(rentEndChooser);
+            
+            occupants = new JTextField();
+            occupants.setColumns(10);
+            occupants.setBounds(183, 290, 215, 26);
+            mainPanel.add(occupants);
             
             JLabel lblAddTenant = new JLabel("ADD TENANT");
             lblAddTenant.setFont(new Font("Segoe UI", Font.PLAIN, 18));
@@ -201,7 +203,7 @@ public class AddTenantDialog extends JDialog {
 				        String email = txtEmail.getText();
 				        String additionalInfo = txtAreaAdditional.getText();
 				        String unitCode = comboBoxUnitCode.getSelectedItem().toString();
-				        String strOccupants = txtOccupants.getText();				        				        
+				        String strOccupants = occupants.getText();				        				        
 
 				       Date rentStartDate = dateRentedChooser.getDate();
 				       String strRentStartDate = null;
@@ -220,8 +222,9 @@ public class AddTenantDialog extends JDialog {
 		                }
 				        
 				        DatabaseConnection dbc = new DatabaseConnection();
+				        
 		                String result = dbc.addTenant(firstName, lastName, contactNo, email, unitCode, strOccupants, additionalInfo, strRentStartDate, strRentEndDate);
-		                String History = dbc.addTenanthisotry(firstName, lastName, contactNo, email, unitCode, strOccupants, additionalInfo, strRentStartDate, strRentEndDate);
+		                //String History = dbc.addTenanthisotry(firstName, lastName, contactNo, email, unitCode, strOccupants, additionalInfo, strRentStartDate, strRentEndDate);
 		                // Display success or error message based on result
 		                if (result.equals("Tenant and related data saved successfully.")) {
 		                    JOptionPane.showMessageDialog(AddTenantDialog.this,

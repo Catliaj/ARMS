@@ -395,22 +395,23 @@ public class DatabaseConnection {
 	        UPDATE bills b
 	        JOIN apartment a ON b.unitID = a.unitID
 	        LEFT JOIN facility f ON b.facilityID = f.facilityID
-	        SET b.totalAmount = (
-	            a.rentAmount +
-	            IFNULL(b.electricityBill, 0) +
-	            IFNULL(b.waterBill, 0) +
-	            IFNULL(f.facilityBill, 0) -
-	            IFNULL(b.advancePayment, 0)
-	        )
-	    """;
+	        SET 
+	            b.totalAmount = (
+	                a.rentAmount +
+	                IFNULL(b.electricityBill, 0) +
+	                IFNULL(b.waterBill, 0) +
+	                IFNULL(f.facilityBill, 0)
+	            )
+	        """;
 
 	    String updateBalanceQuery = """
-	        UPDATE bills b
-	        LEFT JOIN payment p ON b.billID = p.billID
-	        SET b.totalBalance = (
-	            b.totalAmount - IFNULL((SELECT SUM(p.paymentAmount) FROM payment p WHERE p.billID = b.billID), 0)
-	        );
-	    """;
+	    	    UPDATE bills b
+	    	    LEFT JOIN payment p ON b.billID = p.billID
+	    	    SET b.totalBalance = (
+	    	        b.totalAmount - IFNULL((SELECT SUM(p.paymentAmount) FROM payment p WHERE p.billID = b.billID), 0) - b.advancePayment
+	    	    );
+	    	""";
+
 
 	    String selectQuery = """
 	        SELECT 
@@ -699,7 +700,7 @@ return success;
 	
 	public List<Apartment> getAllApartments() {
         List<Apartment> apartments = new ArrayList<>();
-        String query = "SELECT unitID, unitCode, unitType, description, rentAmount, status FROM apartment";
+        String query = "SELECT unitID, unitCode, unitType, description, rentAmount, status, bedspace FROM apartment";
 
         try (PreparedStatement stmt = connection.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
@@ -711,8 +712,9 @@ return success;
                 String description = rs.getString("description");
                 double rentAmount = rs.getDouble("rentAmount");
                 String status = rs.getString("status");
+                int bedspace = rs.getInt("bedspace");
 
-                apartments.add(new Apartment(unitID, unitCode, unitType, description, rentAmount, status));
+                apartments.add(new Apartment(unitID, unitCode, unitType, description, rentAmount, status,bedspace));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -769,6 +771,7 @@ return success;
 		}
 }
 
+			
 
 	
 

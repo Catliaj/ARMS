@@ -29,6 +29,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.util.Date;
+import model.Apartment;
 
 public class AssignTenantDialog extends JDialog {
 
@@ -38,7 +39,7 @@ public class AssignTenantDialog extends JDialog {
 	private JTextField txtFname;
 	private JTextField txtContactNo;
 	private JTextField txtEmail;
-	private JTextField txtOccupants;
+	private JTextField txtOccupants ;
 	private JTextField textField_6;
 	private JTextField textField_7;
 
@@ -55,6 +56,7 @@ public class AssignTenantDialog extends JDialog {
 		}
 	}
 
+	Apartment apartment = new Apartment();
 	/**
 	 * Create the dialog.
 	 */
@@ -133,7 +135,7 @@ public class AssignTenantDialog extends JDialog {
         	mainPanel.add(lblUnitCode);
         	
         	JComboBox comboBoxUnitCode = new JComboBox();
-        	comboBoxUnitCode.setModel(new DefaultComboBoxModel(new String[] {"", "SOL-101", "SOL-102", "SOL-103", "SOL-104", "SOL-105", "SOL-106", "SOL-107", "SOL-108", "COP-101", "COP-102", "COP-103", "COP-104", "COP-105", "COP-106", "COP-107", "COP-108", "FAM-101", "FAM-102", "FAM-103", "FAM-104", "FAM-105", "FAM-106", "FAM-107", "FAM-108"}));
+        	comboBoxUnitCode.addItem(apartment.getUnitCode());
         	comboBoxUnitCode.setBounds(183, 30, 215, 26);
         	mainPanel.add(comboBoxUnitCode);
         	
@@ -202,6 +204,7 @@ public class AssignTenantDialog extends JDialog {
 				        String additionalInfo = txtAreaAdditional.getText();
 				        String unitCode = comboBoxUnitCode.getSelectedItem().toString();
 				        String strOccupants = txtOccupants.getText();
+				       
 				        
 				        
 

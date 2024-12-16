@@ -139,7 +139,7 @@ public class Apartments extends JFrame {
         	new Object[][] {
         	},
         	new String[] {
-        		"No.", "Unit Code", "Unit Type", "Description", "Rent Amount", "Status"
+        		"No.", "Unit Code", "Unit Type", "Description", "Rent Amount", "BedSpace","Status"
         	}
         ));
         scrollPane.setViewportView(tableApartments);
@@ -267,6 +267,7 @@ public class Apartments extends JFrame {
               //  "View Description",  // Text for the button
                 apartment.getDescription(),
                 apartment.getRentAmount(),
+                apartment.getBedspace(),
                 apartment.getStatus()
             };
             model.addRow(row);

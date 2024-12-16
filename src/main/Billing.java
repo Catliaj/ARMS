@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -133,10 +134,30 @@ public class Billing extends JFrame {
         // Insert Charges Button
         RoundedButton btnInsertCharges = new RoundedButton("Insert Charges", 15);
         btnInsertCharges.addActionListener(e -> {
-            InsertChargesDialog insertDialog = new InsertChargesDialog();
-            insertDialog.setModal(true);
-            insertDialog.setVisible(true);
+            // Ensure a row is selected
+            int selectedRow = tableRentBills.getSelectedRow();
+            if (selectedRow != -1) {
+                // Retrieve and clean the data
+                String billID = tableRentBills.getValueAt(selectedRow, 0).toString();
+                String electricity = cleanNumericValue(tableRentBills.getValueAt(selectedRow, 3).toString());
+                String water = cleanNumericValue(tableRentBills.getValueAt(selectedRow, 4).toString());
+                String facilityName = tableRentBills.getValueAt(selectedRow, 5).toString();
+                String facilityBill = cleanNumericValue(tableRentBills.getValueAt(selectedRow, 5).toString());
+                String advancePayment = cleanNumericValue(tableRentBills.getValueAt(selectedRow, 6).toString());
+
+                // Open InsertChargesDialog and populate fields
+                InsertChargesDialog insertDialog = new InsertChargesDialog();
+                insertDialog.setChargesData(billID, electricity, water, facilityBill, advancePayment);
+                insertDialog.setModal(true);
+                insertDialog.setVisible(true);
+            } else {
+                // Show an error message if no row is selected
+                JOptionPane.showMessageDialog(this, "Please select a row to insert charges.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
+
+    
+
         btnInsertCharges.setForeground(Color.WHITE);
         btnInsertCharges.setBorderPainted(false);
         btnInsertCharges.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -155,5 +176,9 @@ public class Billing extends JFrame {
         btnRefresh.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnRefresh.setBounds(840, 15, 80, 30);
         mainPanel.add(btnRefresh);
+    }
+ // Helper method to clean numeric values
+    private String cleanNumericValue(String value) {
+        return value.replaceAll("[^\\d.]", ""); // Remove any character that's not a digit or decimal point
     }
 }
